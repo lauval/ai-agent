@@ -1,3 +1,5 @@
 .env
 */__pycache__/
 *.ipynb
+.ruff_cache
+.venv

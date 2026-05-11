@@ -1,56 +1,41 @@
 import os
 
-def make_path_absolute(directory:str):
-    """Converts a relative path to absolute
-
-    Args:
-        directory (str): the relative path to the directory of concern
-
-    Returns:
-        str: the absolute path of the directory of concern
-    """
-    return os.path.abspath(directory)
-
-def create_target_dir(abs_path_working_dir:str,
-                      directory:str):
-    """Creates a joint path consisting of the absolute path of the working
-    directory plus the directory to grant the agent access to.
-
-    Args:
-        abs_path_working_dir (str): the absolute path of the working directory
-        directory (str): the (nested) directory to make available to the agent
-
-    Returns:
-        str: the normalised joint path 
-    """
-    # construct the path first, then return the normalised version
-    joint_path = os.path.join(abs_path_working_dir, directory)
-    return os.path.normpath(joint_path)
-
-def check_path_commonality(paths:list):
-    """check whether the absolute paths in a list share some element of their
-    paths.
-
-    Args:
-        paths (list): list of paths to check for commonality
-
-    Returns:
-        bool: True or False depending on whether they share common paths
-    """
-    return os.path.commonpath(paths)
-
 
 def get_files_info(working_directory, directory="."):
-    # check if the directory path is inside the working directory
-    abs_working_dir = make_path_absolute(working_directory)
-    target_dir = create_target_dir(abs_working_dir, directory)
+    """
+    Fetch metadata for all items present in a directory of concern.
 
-    # check if the target_dir path falls within the absolute working dir path   
-    common_path = check_path_commonality([abs_working_dir, target_dir])
+    Args:
+        working_directory (str): the directory to which the agent's actions are
+                                 restricted.
+        directory (str, optional): the directory the agent wants to explore.
+                                   Defaults to ".".
 
-    if not common_path:
-        return f'Error: Cannot list "{target_dir}" as it is outside the permitted working directory'
-    
-    elif not os.path.isdir(directory):
-        return f'Error: "{directory}" is not a directory'
-    
+    Returns:
+        str: one self-contained string consisting of the file name, size and
+             directory status of each item in the target directory
+    """
+    try:
+        # attempt to construct an absolute common path
+        abs_working_dir = os.path.abspath(working_directory)
+        target_dir = os.path.normpath(os.path.join(abs_working_dir, directory))
+        common_path = os.path.commonpath([abs_working_dir, target_dir]) == abs_working_dir
+        
+        # now check if the directory argument is a directory
+        if not common_path:
+            return (
+                f'Error: Cannot list "{directory}" as it is outside the '
+                f"permitted working directory"
+            )
+
+        # iterate over the target dir and return a string of metadata
+        list_of_metadata = [
+            f"- {dir_entry.name}: file_size={dir_entry.stat().st_size} bytes,"
+            f" is_dir={dir_entry.is_dir()}"
+            for dir_entry in os.scandir(target_dir)
+        ]
+
+        return "\n".join(list_of_metadata)
+
+    except Exception as error:
+        return f"Error: {error}"
