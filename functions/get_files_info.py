@@ -1,4 +1,5 @@
 import os
+from helper_funcs import validate_target
 
 
 def get_files_info(working_directory, directory="."):
@@ -16,13 +17,10 @@ def get_files_info(working_directory, directory="."):
              directory status of each item in the target directory
     """
     try:
-        # attempt to construct an absolute common path
-        abs_working_dir = os.path.abspath(working_directory)
-        target_dir = os.path.normpath(os.path.join(abs_working_dir, directory))
-        common_path = os.path.commonpath([abs_working_dir, target_dir]) == abs_working_dir
-        
+        valid_target, target_dir = validate_target(working_directory, directory)
+
         # now check if the directory argument is a directory
-        if not common_path:
+        if not valid_target:
             return (
                 f'Error: Cannot list "{directory}" as it is outside the '
                 f"permitted working directory"
