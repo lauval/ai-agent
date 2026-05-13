@@ -12,10 +12,15 @@ def validate_target(working_directory: str, directory_or_file_path: str = "."):
     error message for the agent, as a string.
     """
 
-    abs_working_dir = os.path.abspath(working_directory)
-    target_dir = os.path.normpath(os.path.join(abs_working_dir, directory_or_file_path))
-    target_in_working_dir = (
-        os.path.commonpath([abs_working_dir, target_dir]) == abs_working_dir
-    )
+    try:
+        abs_working_dir = os.path.abspath(working_directory)
+        target_dir = os.path.normpath(
+            os.path.join(abs_working_dir, directory_or_file_path)
+        )
+        target_in_working_dir = (
+            os.path.commonpath([abs_working_dir, target_dir]) == abs_working_dir
+        )
+    except Exception as e:
+        return f"Error: {e}"
 
     return target_in_working_dir, target_dir

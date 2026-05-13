@@ -2,7 +2,7 @@ import os
 from functions.helper_funcs import validate_target, READ_CHAR_LIMIT
 
 
-def get_file_content(working_directory, file_path):
+def get_file_content(working_directory: str, file_path: str):
     """
     Fetches and returns up to 10,000 characters of a given file if and only if it lives
     within the boundaries of the working directory.

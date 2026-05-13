@@ -1,5 +1,5 @@
 import os
-from helper_funcs import validate_target
+from functions.helper_funcs import validate_target
 
 
 def get_files_info(working_directory, directory="."):
