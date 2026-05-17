@@ -3,7 +3,7 @@ import os
 from functions.helper_funcs import validate_target
 
 
-def run_python_file(working_directory:str, file_path:str, args=None):
+def run_python_file(working_directory: str, file_path: str, args=None):
     try:
         valid, target = validate_target(working_directory, file_path)
 
@@ -22,7 +22,14 @@ def run_python_file(working_directory:str, file_path:str, args=None):
             exec_command.extend(args)
 
         # execute command
-        completed_process = subprocess.run(exec_command, cwd=working_directory,capture_output=True, timeout=30, text=True)
+        # working dir passed in its absolute form to maintain consistency with `target`
+        completed_process = subprocess.run(
+            exec_command,
+            cwd=os.path.abspath(working_directory),
+            capture_output=True,
+            timeout=30,
+            text=True,
+        )
 
         output = []
         if completed_process.returncode != 0:
@@ -31,9 +38,10 @@ def run_python_file(working_directory:str, file_path:str, args=None):
         if not completed_process.stderr and not completed_process.stdout:
             output.append("No output produced")
         else:
-            output.append(f"STDOUT: {completed_process.stdout}, STDERR: {completed_process.stderr}")
-        
+            output.append(f"STDOUT: {completed_process.stdout}")
+            output.append(f"STDERR: {completed_process.stderr}")
+
         return " ".join(output)
-    
+
     except Exception as e:
-        return f"Error: {e}"
+        return f"Error: executing Python file: {e}"

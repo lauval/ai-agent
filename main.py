@@ -10,7 +10,7 @@ api_key = os.environ.get("GOOGLE_API_KEY")
 client = genai.Client(api_key=api_key)
 
 # read in system prompt
-with open(file="system_prompt.md",mode="r") as f:
+with open(file="system_prompt.md", mode="r") as f:
     system_prompt = f.read()
 
 # create argument parser
@@ -24,9 +24,9 @@ messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)]
 
 # send the request to google
 response = client.models.generate_content(
-    model="gemini-3-flash-preview", 
+    model="gemini-3-flash-preview",
     contents=messages,
-    config=types.GenerateContentConfig(system_instruction=system_prompt)
+    config=types.GenerateContentConfig(system_instruction=system_prompt),
 )
 
 metadata_stats = response.usage_metadata.__dict__
