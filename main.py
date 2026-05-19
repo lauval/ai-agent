@@ -3,6 +3,7 @@ import argparse
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from functions.call_functions import callable_functions
 
 # set up environment variables
 load_dotenv()
@@ -26,7 +27,9 @@ messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)]
 response = client.models.generate_content(
     model="gemini-3-flash-preview",
     contents=messages,
-    config=types.GenerateContentConfig(system_instruction=system_prompt),
+    config=types.GenerateContentConfig(
+        tools=[callable_functions], system_instruction=system_prompt
+    ),
 )
 
 metadata_stats = response.usage_metadata.__dict__
@@ -42,4 +45,10 @@ if args.verbose:
     print(f"Prompt tokens: {prompt_tokens}")
     print(f"Response tokens: {output_tokens}")
 
-print(f"Response: {response.text}")
+# side-effect: logging model response or function calls to console
+if response.function_calls is None:
+    print(f"Response: {response.text}")
+
+else:
+    for function_call in response.function_calls:
+        print(f"Calling function: {function_call.name}({function_call.args})")
