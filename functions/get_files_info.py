@@ -4,20 +4,26 @@ from google.genai import types
 
 schema_get_files_info = types.FunctionDeclaration(
     name="get_files_info",
-    description="Lists files in a specified directory relative to the working directory, providing file size and directory status",
+    description=(
+        "Lists files in a specified directory relative to the working directory, providing file "
+        "size and directory status"
+    ),
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
             "directory": types.Schema(
                 type=types.Type.STRING,
-                description="Directory path to list files from, relative to the working directory (default is the working directory itself)",
+                description=(
+                    "Directory path to list files from, relative to the working directory "
+                    "(default is the working directory itself)"
+                ),
             ),
         },
     ),
 )
 
 
-def get_files_info(working_directory, directory="."):
+def get_files_info(working_directory: str, directory: str = ".") -> str:
     """
     Fetch metadata for all items present in a directory of concern.
 
@@ -37,8 +43,7 @@ def get_files_info(working_directory, directory="."):
         # now check if the directory argument is a directory
         if not valid_target:
             return (
-                f'Error: Cannot list "{directory}" as it is outside the '
-                f"permitted working directory"
+                f'Error: Cannot list "{directory}" as it is outside the permitted working directory'
             )
 
         # iterate over the target dir and return a string of metadata

@@ -1,8 +1,23 @@
 import os
+from google.genai import types
 from functions.helper_funcs import validate_target
 
+schema_get_files_info = types.FunctionDeclaration(
+    name="get_files_info",
+    description="Lists files in a specified directory relative to the working directory, providing file size and directory status",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "directory": types.Schema(
+                type=types.Type.STRING,
+                description="Directory path to list files from, relative to the working directory (default is the working directory itself)",
+            ),
+        },
+    ),
+)
 
-def write_file(working_directory: str, file_path: str, content: str):
+
+def write_file(working_directory: str, file_path: str, content: str) -> str:
     try:
         valid, target = validate_target(working_directory, file_path)
         print(f"\n\nTARGET FILE PATH: {target}")
@@ -21,9 +36,7 @@ def write_file(working_directory: str, file_path: str, content: str):
         with open(target, "w") as f:
             f.write(content)
 
-        return (
-            f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
-        )
+        return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
 
     except Exception as e:
         return f"Error: {e}"

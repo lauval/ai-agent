@@ -9,7 +9,7 @@ test_cases = [
 
 
 # wrapper function to test get_files_info
-def test_get_files_info(working_directory, directory):
+def test_get_files_info(working_directory: str, directory: str) -> str:
     result = get_files_info(working_directory, directory)
     if directory == ".":
         return f"Result for current directory:\n{result}"
