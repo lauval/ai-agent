@@ -25,7 +25,7 @@ messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)]
 
 # send the request to google
 response = client.models.generate_content(
-    model="gemini-3-flash-preview",
+    model="gemini-3.5-flash",
     contents=messages,
     config=types.GenerateContentConfig(
         tools=[callable_functions], system_instruction=system_prompt
