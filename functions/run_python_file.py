@@ -5,18 +5,30 @@ from functions.helper_funcs import validate_target
 
 schema_run_python_file = types.FunctionDeclaration(
     name="run_python_file",
-    description=("Call this function when you need to run python scripts"),
+    description=(
+        "Executes a Python (.py) file within the working directory and returns its output. "
+        "The response includes STDOUT and STDERR, and notes the exit code if the process exits "
+        "with a non-zero code. The process is killed automatically after 30 seconds. "
+        "Use this to run tests, scripts, or any Python program."
+    ),
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
             "file_path": types.Schema(
                 type=types.Type.STRING,
-                description="The (relative) path of the python file to be executed",
+                description=(
+                    "Relative path to the .py file to execute, from the working directory root. "
+                    "The file must have a .py extension."
+                ),
             ),
             "args": types.Schema(
                 type=types.Type.ARRAY,
                 items=types.Schema(type=types.Type.STRING),
-                description="This is an optional parameter that accepts lists of strings.",
+                description=(
+                    "Optional list of command-line argument strings passed to the script "
+                    "(equivalent to sys.argv[1:]). For example: ['--verbose', 'input.txt']. "
+                    "Omit or pass an empty list if no arguments are needed."
+                ),
             ),
         },
         required=["file_path"],

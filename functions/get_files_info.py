@@ -5,8 +5,9 @@ from google.genai import types
 schema_get_files_info = types.FunctionDeclaration(
     name="get_files_info",
     description=(
-        "Lists files in a specified directory relative to the working directory, providing file "
-        "size and directory status"
+        "Lists the immediate (non-recursive) contents of a directory within the working directory. "
+        "Returns one entry per line in the format: '- <name>: file_size=<bytes> bytes, is_dir=<bool>'. "
+        "Use this to explore the file system before reading or writing files."
     ),
     parameters=types.Schema(
         type=types.Type.OBJECT,
@@ -14,8 +15,9 @@ schema_get_files_info = types.FunctionDeclaration(
             "directory": types.Schema(
                 type=types.Type.STRING,
                 description=(
-                    "Directory path to list files from, relative to the working directory "
-                    "(default is the working directory itself)"
+                    "Relative path of the directory to list, from the working directory root. "
+                    "Defaults to '.' (the working directory itself). "
+                    "Must not resolve to a path outside the working directory."
                 ),
             ),
         },

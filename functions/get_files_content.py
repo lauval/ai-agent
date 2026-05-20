@@ -5,15 +5,19 @@ from functions.helper_funcs import validate_target, READ_CHAR_LIMIT
 schema_get_file_content = types.FunctionDeclaration(
     name="get_file_content",
     description=(
-        "Call this function when you need to read file contents. Returns up to 10,000 characters "
-        "of a specified file relative to the working directory."
+        "Reads and returns the text content of a file within the working directory, up to 10,000 "
+        "characters. If the file exceeds that limit, the returned string ends with a truncation "
+        "notice. Use this to inspect source code, configuration, or any text file before modifying it."
     ),
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
             "file_path": types.Schema(
                 type=types.Type.STRING,
-                description="The (relative) path of the file to be read.",
+                description=(
+                    "Relative path to the file to read, from the working directory root. "
+                    "Must point to a regular file (not a directory)."
+                ),
             ),
         },
     ),
