@@ -11,6 +11,7 @@ from functions.call_functions import callable_functions, call_function
 load_dotenv()
 api_key = os.environ.get("GOOGLE_API_KEY")
 client = genai.Client(api_key=api_key)
+max_iterations = 40
 
 
 def main():
@@ -28,8 +29,8 @@ def main():
     # set up role tracking
     messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
 
-    # initiate the agent loop. 20 maximum iterations
-    for iter_val in range(20):
+    # initiate the agent loop
+    for iter_val in range(max_iterations):
         # send the request to google
         response = client.models.generate_content(
             model="gemini-2.5-pro",
@@ -47,8 +48,8 @@ def main():
         # collect stats (token counts) for logging to console
         metadata_stats = response.usage_metadata.__dict__
 
-        if metadata_stats is None:
-            raise RuntimeError("Failed request. Please try again")
+        # if metadata_stats is None:
+        #     raise RuntimeError("Failed request. Please try again")
 
         prompt_tokens = metadata_stats["prompt_token_count"]
         output_tokens = metadata_stats["candidates_token_count"]
@@ -65,27 +66,26 @@ def main():
 
         else:
             for function_call in response.function_calls:
+                result = call_function(function_call, verbose=args.verbose)
+
+                # append function call results to messages list
+                messages.append(result)
+
+                if not bool(result.parts):
+                    raise Exception("Function call does not contain a .parts attribute")
+
+                elif type(result.parts[0].function_response) is not FunctionResponse:
+                    raise Exception("Function call did not return a FunctionResponse object")
+
+                elif result.parts[0].function_response.response is None:
+                    raise Exception("Function response is empty")
+
                 if args.verbose:
-                    result = call_function(function_call, verbose=True)
-
-                    if not bool(result.parts):
-                        raise Exception("Function call does not contain a .parts attribute")
-
-                    elif type(result.parts[0].function_response) is not FunctionResponse:
-                        raise Exception("Function call did not return a FunctionResponse object")
-
-                    elif result.parts[0].function_response.response is None:
-                        raise Exception("Function response is empty")
-
-                    if args.verbose:
-                        print(f"-> ({result.parts[0].function_response.response})")
-
-        # append function call results to messages list
-        messages.append(result)
+                    print(f"-> ({result.parts[0].function_response.response})")
 
         # as a final check, if we've reached the max num of iterations and there's
         # still no response, exit with code 1
-        if iter_val == 20:
+        if iter_val == max_iterations - 1:
             print("\nMaximum number of iterations reached, exiting with sys code 1")
             sys.exit(1)
 
