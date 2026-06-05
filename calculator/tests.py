@@ -20,6 +20,14 @@ class TestCalculator(unittest.TestCase):
     def test_division(self):
         self.assertEqual(self.calculator.evaluate("10 / 2"), 5)
 
+    def test_exponentiation(self):
+        self.assertEqual(self.calculator.evaluate("2 ^ 3"), 8)
+        self.assertEqual(self.calculator.evaluate("5 ^ 2"), 25)
+
+    def test_modulo(self):
+        self.assertEqual(self.calculator.evaluate("10 % 3"), 1)
+        self.assertEqual(self.calculator.evaluate("5 % 2"), 1)
+
     def test_division_by_zero(self):
         with self.assertRaisesRegex(ValueError, "not allowed"):
             self.calculator.evaluate("10 / 0")

@@ -48,9 +48,6 @@ def main():
         # collect stats (token counts) for logging to console
         metadata_stats = response.usage_metadata.__dict__
 
-        # if metadata_stats is None:
-        #     raise RuntimeError("Failed request. Please try again")
-
         prompt_tokens = metadata_stats["prompt_token_count"]
         output_tokens = metadata_stats["candidates_token_count"]
 

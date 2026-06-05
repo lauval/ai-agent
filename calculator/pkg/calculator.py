@@ -10,9 +10,11 @@ class Calculator:
             "-": lambda a, b: a - b,
             "*": lambda a, b: a * b,
             "/": self._safe_divide,
+            "^": lambda a, b: a**b,
+            "%": lambda a, b: a % b,
             "~": lambda a: -a,  # Unary minus
         }
-        self.precedence = {"+": 1, "-": 1, "*": 2, "/": 2, "~": 3}
+        self.precedence = {"+": 1, "-": 1, "*": 2, "/": 2, "%": 2, "^": 3, "~": 4}
 
     def _safe_divide(self, a, b):
         if b == 0:
@@ -27,7 +29,7 @@ class Calculator:
 
     def _tokenize(self, expression):
         # Add spaces around operators and parentheses for easier splitting.
-        expression = re.sub(r"([+\-*/()])", r" \1 ", expression)
+        expression = re.sub(r"([+\-*/()^%])", r" \1 ", expression)
         return expression.strip().split()
 
     def _evaluate_infix(self, tokens):
